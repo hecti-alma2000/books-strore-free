@@ -1,0 +1,100 @@
+---
+import { ClientRouter } from "astro:transitions";
+import '../styles/global.css';
+import ThemeToggle from '../components/ThemeToggle.astro';
+
+// Definimos los tipos para las "Props" (TypeScript)
+interface Props {
+	title: string;
+	description?: string;
+}
+
+// Extraemos los valores de las props con valores por defecto
+const { 
+	title, 
+	description = "Mi nuevo sitio web creado con Astro y Tailwind" 
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		
+		<title>{title}</title>
+		<meta name="description" content={description} />
+
+		<ClientRouter />
+		<script is:inline>
+			// Función para obtener el tema (localStorage > preferencia sistema)
+			const getTheme = () => {
+				if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+					return localStorage.getItem('theme');
+				}
+				if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+					return 'dark';
+				}
+				return 'light';
+			};
+
+			// Función para aplicar el tema al documento
+			const applyTheme = () => {
+				const theme = getTheme();
+				if (theme === 'dark') {
+					document.documentElement.classList.add('dark');
+				} else {
+					document.documentElement.classList.remove('dark');
+				}
+				// Opcional: Guardar en localStorage para asegurar consistencia
+				localStorage.setItem('theme', theme);
+			};
+
+			// Ejecutar al cargar la página inicial
+			applyTheme();
+
+			// Ejecutar al navegar entre páginas (Importante para ClientRouter)
+			document.addEventListener('astro:after-swap', applyTheme);
+		</script>
+	</head>
+
+	<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased font-sans transition-colors duration-300">
+    <div class="flex flex-col min-h-screen">
+        
+        <nav class="border-b border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 backdrop-blur-md sticky top-0 z-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <a href="/" class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
+                        Books Store
+                    </a>
+                    
+                    <ThemeToggle />
+                </div>
+            </div>
+        </nav>
+        <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <slot /> 
+        </main>
+        
+    </div>
+</body>
+</html>
+
+<style is:global>
+	/* Optimizamos el scroll */
+	html {
+		scroll-behavior: smooth;
+	}
+	
+	body {
+		/* Aseguramos que el layout use toda la pantalla horizontalmente */
+		overflow-x: hidden;
+	}
+
+	/* NOTA: He eliminado el background y color hardcodeados aquí 
+    porque ahora Tailwind se encarga de eso en el <body>.
+    si los dejas, anularán el modo claro.
+    */
+</style>

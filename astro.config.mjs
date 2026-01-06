@@ -1,5 +1,18 @@
-// @ts-check
 import { defineConfig } from 'astro/config';
+import tailwind from '@astrojs/tailwind';
 
-// https://astro.build/config
-export default defineConfig({});
+export default defineConfig({
+  integrations: [tailwind()],
+  vite: {
+    optimizeDeps: {
+      // ESTO EVITA QUE ESBUILD ESCANEE TODO AL INICIO Y SE DETENGA
+      noDiscovery: true,
+      include: []
+    },
+    server: {
+      fs: {
+        strict: false
+      }
+    }
+  }
+});
