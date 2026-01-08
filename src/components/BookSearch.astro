@@ -28,10 +28,11 @@ const categories = Array.from(new Set(books.map(b => b.data?.category).filter(Bo
             alt={title} 
             class="w-28 rounded"
             data-transition-name={`img-${slug}`}
+            transition:name={`img-${slug}`}
             />
           </a>
           <div class="flex-1">
-            <h3 data-transition-name={`name-${slug}`} class="text-lg font-semibold">{title}</h3>
+            <h3 transition:name={`name-${slug}`} class="text-lg font-semibold">{title}</h3>
             <p class="text-sm text-muted-foreground">Autor: <span class="font-medium">{author}</span></p>
             <p class="text-sm">Páginas: {pagenumber}</p>
             <p class="text-sm font-bold mt-1">{category}</p>

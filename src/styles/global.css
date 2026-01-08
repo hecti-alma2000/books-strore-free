@@ -2,3 +2,41 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Animaciones sutiles de scroll (reveal) */
+/* Se aplican a los hijos directos de <main> y a elementos con la clase .reveal */
+:root {
+	--reveal-offset: 16px;
+	--reveal-duration: 620ms;
+	--reveal-ease: cubic-bezier(.22,.9,.36,1);
+}
+
+/* Estado inicial */
+.reveal,
+main > * {
+	opacity: 0;
+	transform: translateY(var(--reveal-offset));
+	transition: opacity var(--reveal-duration) var(--reveal-ease), transform var(--reveal-duration) var(--reveal-ease);
+	will-change: opacity, transform;
+}
+
+/* Cuando el elemento entra en vista */
+.in-view {
+	opacity: 1 !important;
+	transform: none !important;
+}
+
+/* Pequeñas variaciones para elementos más grandes */
+.reveal.delay-1 { transition-delay: 80ms; }
+.reveal.delay-2 { transition-delay: 160ms; }
+.reveal.delay-3 { transition-delay: 240ms; }
+
+/* Respetar preferencia de reducción de movimiento */
+@media (prefers-reduced-motion: reduce) {
+	.reveal,
+	main > * {
+		opacity: 1;
+		transform: none;
+		transition: none;
+	}
+}

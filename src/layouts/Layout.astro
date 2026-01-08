@@ -98,3 +98,32 @@ const {
     si los dejas, anularán el modo claro.
     */
 </style>
+
+<script is:inline>
+(() => {
+	const revealSelector = 'main > *, .reveal';
+
+	function initReveal() {
+		const items = Array.from(document.querySelectorAll(revealSelector));
+		if (!items.length) return;
+
+		const observer = new IntersectionObserver((entries, obs) => {
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					entry.target.classList.add('in-view');
+					obs.unobserve(entry.target);
+				}
+			});
+		}, { root: null, rootMargin: '0px 0px -8% 0px', threshold: 0.06 });
+
+		items.forEach(item => {
+			if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+			if (!item.classList.contains('reveal')) item.classList.add('reveal');
+			observer.observe(item);
+		});
+	}
+
+	document.addEventListener('DOMContentLoaded', initReveal);
+	document.addEventListener('astro:after-swap', () => setTimeout(initReveal, 80));
+})();
+</script>
