@@ -7,13 +7,21 @@ import ThemeToggle from '../components/ThemeToggle.astro';
 interface Props {
 	title: string;
 	description?: string;
+	image?: string;
+	canonical?: string;
 }
 
 // Extraemos los valores de las props con valores por defecto
-const { 
-	title, 
-	description = "Mi nuevo sitio web creado con Astro y Tailwind" 
+const {
+	title,
+	description = "Mi nuevo sitio web creado con Astro y Tailwind",
+	image = '/favicon.svg',
+	canonical = ''
 } = Astro.props;
+
+const site = import.meta.env.SITE ?? '';
+const fullImage = site && image && !image.startsWith('http') ? new URL(image, site).toString() : image;
+const canonicalUrl = canonical || site || '';
 ---
 
 <!doctype html>
@@ -26,6 +34,21 @@ const {
 		
 		<title>{title}</title>
 		<meta name="description" content={description} />
+
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={fullImage} />
+		{canonicalUrl ? <meta property="og:url" content={canonicalUrl} /> : null}
+
+		<!-- Twitter -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={fullImage} />
+
+		{canonicalUrl ? <link rel="canonical" href={canonicalUrl} /> : null}
 
 		<ClientRouter />
 		<script is:inline>
